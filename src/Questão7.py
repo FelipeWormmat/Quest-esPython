@@ -1,95 +1,59 @@
-class Entradas:    
-    
-    def entrada_tratada_dia(mensagem) -> int:
-        while True:
-            try:
-                dia = int(input(mensagem))
-                if(dia >= 1 and dia <=31):
-                    return dia
-                print('Informe um valor numérico entre 1 e 31')
-            except:
-                print('Informe um valor numérico entre 1 e 31')
-    
-    
-    def entrada_tratada_mes(mensagem) -> int:
-        while True:
-            try:
-                mes = int(input(mensagem))
-                if(mes >= 1 and mes <=12):
-                    return mes
-                print('Informe um valor numérico entre 1 e 12')
-            except:
-                print('Informe um valor numérico entre 1 e 12')
-    
-    
-    def entrada_tratada_ano(mensagem) -> int:
-        while True:
-            try:
-                ano = int(input(mensagem))
-                if(ano > 0):
-                    return ano
-                print('Informe um valor numérico maior que 0')
-            except:
-                print('Informe um valor numérico maior que 0')
+import sys
 
-class UtilitarioData:
-    
-    def avancar_dia(data):
-        data.dia += 1
-        if(data.dia == 32):
-            data.dia = 1
-            data.mes += 1
-        
-        if (data.dia == 31 and data.mes not in (1,3,5,7,8,10,12)):
-            data.dia = 1
-            data.mes += 1
-        
-        if(data.mes == 4):
-            if((data.ano % 4) != 0 and data.dia == 29):
-                data.dia = 1
-                data.mes += 1
-            
-            if(data.dia > 29):
-                data.dia=1
-                data.mes+=1
-        
-        if(data.mes > 12):
-            data.mes = 1
-            data.ano += 1
-        
-        return data
 
-    
-    def checa_data(data):
-        if(data.dia == 31 and data.mes not in (1,3,5,7,8,10,12)):
-            raise Exception("Dia inválido para o mês")
-        if(data.mes==4):
-            if(data.dia == 29 and (data.ano%4) != 0):
-                raise Exception("Dia inválido para o mês")
-            if(data.dia>=30):
-                raise Exception("Dia inválido para o mês")
-            
-        return data
+meses_30 = [2, 4, 6, 9, 11]
 
-class Data:
-    def __init__(self,dia,mes,ano) -> None:
-        self.dia = dia
-        self.mes = mes
-        self.ano = ano
+
+class Datas:
+    def __init__(self, dia, mes, ano):
+        self.dia: int = dia
+        self.mes: int = mes
+        self.ano: int = ano
 
     def __str__(self):
-        return f'{self.dia}/{self.mes}/{self.ano}'
+        return f"{self.dia}/{self.mes}/{self.ano}."
 
-class Aplicacao():
-    def aplicacao(self):
-        while True:
-            try:
-                data = UtilitarioData.checa_data(Data(Entradas.entrada_tratada_dia("Digite o dia: "),Entradas.entrada_tratada_mes("Digite o mes: "),Entradas.entrada_tratada_ano("Digite o ano: ")))
-                print(data)
-                print(UtilitarioData.avancar_dia(data))
-            except Exception as e:
-                print(e)
+    def exibe(self):
+        return f"{self.dia}/{self.mes}/{self.ano}."
+
+    def avanca_um(self) -> int:
+        self.dia += 1
+        if (self.mes in meses_30 and self.dia > 30) or self.dia > 31:
+            self.dia = 1
+            self.mes += 1
+        if self.mes > 12:
+            self.mes = 1
+            self.ano += 1
+        return self.exibe()
+
+    def verifica_data(self):
+        if self.mes in meses_30 and (self.dia < 1 or self.dia > 30):
+            return f"Informe um dia entre 1 e 30."
+        elif self.dia < 1 or self.dia > 31:
+            return f"Informe um dia entre 1 e 31."
+        if self.mes < 1 or self.mes > 12:
+           return f"Informe um mês entre 1 e 12."
+
+#verificar as datas com datetime strptime 
+
+def app(dia, mes, ano):
+    data = Datas(dia, mes, ano)
+    verifica = data.verifica_data()
+    if verifica:
+        print(verifica)
+        return
+    print(f'Data: {data}')
+    while True:
+        cont = input(
+            "Deseja avançar para o dia seguinte? (Caso negativo clique enter).\n")
+        if cont:
+            data.avanca_um()
+        else:
+            return
 
 
-app = Aplicacao()
-app.aplicacao()
+if __name__ == "__main__":
+    dia = 2
+    mes = 2
+    ano = 2
+    app(dia, mes, ano)
